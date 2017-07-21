@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">Shot On OnePlus 3</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Shot On X</string>
+    <string name="action_settings">Setting</string>
+    <string name="shot_on">Shot On</string>
+    <string name="photo_by">Photo by</string>
+    <string name="isPersonized">Personized</string>
+    <string name="save">Save</string>
 </resources>
