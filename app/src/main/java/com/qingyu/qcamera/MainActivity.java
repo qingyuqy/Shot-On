@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -50,7 +51,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     private static int REQUEST_ORIGINAL = 2;
     private String tempfile;
-    private String appPath = "ShotOnOnePlus3";
+    private String appPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "ShotOnX" + File.separator;
     private ImageView imageView;
     private static SharedPreferences sp;
     private String sShot_on;
@@ -103,7 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 waterMark = BitmapFactory.decodeResource(this.getResources(),R.drawable.watermark_oneplus_3);
             }else
             {
-                waterMark = BitmapFactory.decodeResource(this.getResources(),R.drawable.shot);
+                Bitmap temp = BitmapFactory.decodeResource(this.getResources(),R.drawable.watermark_empty_text);
+                waterMark = drawNewWaterMark(this,temp);
             }
             //Log.e("waterMark",waterMark.toString());
             imageView.setImageBitmap(bitmap);
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tempfile = appPath+ new Date().getTime() + ".jpg";
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 File outFile = new File(tempfile);
                 if(!outFile.getParentFile().exists()){
@@ -155,10 +158,23 @@ public class MainActivity extends AppCompatActivity {
             Canvas cv = new Canvas(newPic);
             // draw src into
             cv.drawBitmap(src, 0, 0, null);
-            // draw watermark into
-            cv.drawBitmap(watermark, 20,h-wh, null);
+            if(w>h){
 
-            if(isPersonized){
+                Matrix matrix = new Matrix();
+                matrix.postScale(1.1F, 1.1F);
+                Bitmap temp = Bitmap.createBitmap(watermark, 0, 0, ww, wh, matrix, true);
+                watermark = temp;
+            }else{
+                Matrix matrix = new Matrix();
+                matrix.postScale(0.9F, 0.9F);
+                Bitmap temp = Bitmap.createBitmap(watermark, 0, 0, ww, wh, matrix, true);
+                watermark = temp;
+            }
+            cv.drawBitmap(watermark, 20, h - wh-20, null);
+            // draw watermark into
+
+
+      /*      if(isPersonized){
                 cv.drawBitmap(watermark, 20,h-wh-20, null);
                 String text = formatTextMark();
                 TextPaint textPaint = new TextPaint();
@@ -168,14 +184,17 @@ public class MainActivity extends AppCompatActivity {
                 StaticLayout layout = new StaticLayout(text, textPaint, w , Layout.Alignment.ALIGN_NORMAL, 1.0F, 0.0F, true);
                 cv.translate(ww+20,h-wh);
                 layout.draw(cv);
-            /*    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            *//*    Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 paint.setColor(Color.WHITE);
                 paint.setTextSize(dp2px(context, 56));
                 Rect bounds = new Rect();
-                paint.getTextBounds(text, 0, text.length(), bounds);*/
+                paint.getTextBounds(text, 0, text.length(), bounds);*//*
                 //cv.drawText(text,ww,h-wh,paint);
 
-            }
+            }else {
+
+            }*/
+
             // save all clip
             cv.save(Canvas.ALL_SAVE_FLAG);
             // store
@@ -190,11 +209,39 @@ public class MainActivity extends AppCompatActivity {
             return newPic;
         }
    public String formatTextMark(){
-       sShot_on = getResources().getString(R.string.shot_on) +" " + sShot_on;
-       sPhote_by = getResources().getString(R.string.photo_by) +" " + sPhote_by;
+       String temp1 = getResources().getString(R.string.shot_on) +" " + sShot_on;
+       String temp2= getResources().getString(R.string.photo_by) +" " + sPhote_by;
        Log.e("sShot_on",sShot_on);
        Log.e("sPhote_by",sPhote_by);
-       return sShot_on + "\r\n" + sPhote_by;
+       return temp1 + "\r\n" + temp2;
+   }
+
+   public Bitmap drawNewWaterMark(Context context,Bitmap watermark){
+       int w = watermark.getWidth();
+       int h = watermark.getHeight();
+       Bitmap newWaterMark = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+       Canvas canvas = new Canvas(newWaterMark);
+       canvas.drawBitmap(watermark,0,0,null);
+       String temp1 = getResources().getString(R.string.shot_on) +" " + sShot_on;
+       String temp2= getResources().getString(R.string.photo_by) +" " + sPhote_by;
+       Paint paint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
+       paint1.setColor(Color.WHITE);
+       paint1.setTextSize(dp2px(context, 65));
+       Rect bounds = new Rect();
+       paint1.getTextBounds(temp1, 0, temp1.length(), bounds);
+
+       int padding = bounds.height();
+       canvas.drawText(temp1,w/5 + 20,h/2,paint1);
+
+       Paint paint2 = new Paint(Paint.ANTI_ALIAS_FLAG);
+       paint2.setColor(Color.WHITE);
+       paint2.setTextSize(dp2px(context, 52));
+       paint2.getTextBounds(temp2, 0, temp2.length(), bounds);
+       canvas.drawText(temp2,w/5 + 20,h/2 +padding + 2,paint2);
+       canvas.save(Canvas.ALL_SAVE_FLAG);
+       // store
+       canvas.restore();
+       return newWaterMark;
    }
    public void personalized(){
         final Window win = getWindow();
