@@ -5,20 +5,37 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="#ffffff">
-    <LinearLayout
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/isPersonized"
             android:padding="10dp"
             />
         <CheckBox
-            android:id="@+id/checkbox"
+            android:id="@+id/cb_personized"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+    </LinearLayout>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="水印类型"
+            android:padding="10dp"
+            />
+        <Spinner
+            android:id="@+id/sp_markType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/markTypes"
+            android:spinnerMode="dialog"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,12 +44,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/shot_on"
+            android:text="@string/phone"
             android:padding="10dp"
             />
         <EditText
             android:id="@+id/et_shoton"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="10dp" />
     </LinearLayout>
@@ -43,21 +60,37 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/photo_by"
+            android:text="@string/author"
             android:padding="10dp"
             />
         <EditText
             android:id="@+id/et_photoby"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="10dp" />
     </LinearLayout>
 
+
+    <!-- <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="系统相机添加水印"
+             android:padding="10dp"
+             />
+         <CheckBox
+             android:id="@+id/cb_autoMark"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content" />
+     </LinearLayout>-->
     <Button
         android:id="@+id/bt_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:text="Save" />
+        android:text="@string/save" />
 </LinearLayout>
 

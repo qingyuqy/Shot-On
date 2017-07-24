@@ -7,8 +7,8 @@ android {
         applicationId "com.qingyu.qcamera"
         minSdkVersion 22
         targetSdkVersion 22
-        versionCode 2
-        versionName "2.1"
+        versionCode 4
+        versionName "2.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

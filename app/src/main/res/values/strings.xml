@@ -1,8 +1,14 @@
 <resources>
     <string name="app_name">Shot On X</string>
-    <string name="action_settings">Setting</string>
+    <string name="action_settings">设置</string>
     <string name="shot_on">Shot On</string>
     <string name="photo_by">Photo by</string>
-    <string name="isPersonized">Personized</string>
-    <string name="save">Save</string>
+    <string name="phone">机型</string>
+    <string name="author">作者</string>
+    <string name="isPersonized">自定义</string>
+    <string name="save">保存</string>
+    <string-array name="markTypes">
+        <item>机型水印</item>
+        <item>时间水印</item>
+    </string-array>
 </resources>
