@@ -4,10 +4,10 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.qingyu.qcamera.receiver.ShotOnXBroadCastReceiver;
 
 /**
  * Created by QingYu on 2017/7/22.

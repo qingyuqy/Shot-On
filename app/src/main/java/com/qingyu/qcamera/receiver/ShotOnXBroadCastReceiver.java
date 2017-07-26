@@ -1,4 +1,4 @@
-package com.qingyu.qcamera.services;
+package com.qingyu.qcamera.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
