@@ -10,5 +10,6 @@
     <string-array name="markTypes">
         <item>机型水印</item>
         <item>时间水印</item>
+        <item>机型和时间</item>
     </string-array>
 </resources>

@@ -1,16 +1,29 @@
 package com.qingyu.qcamera.utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.util.Log;
 
 import com.qingyu.qcamera.R;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -19,14 +32,68 @@ import java.util.Date;
  */
 
 public class ImageUtils {
-    private static ImageUtils imageUtils;
+    static String markType_phone = "机型水印";
+    static String markType_time = "时间水印";
+    static String markType_both ="机型和时间";
+/*    private static ImageUtils imageUtils;
     public static ImageUtils getInstance(){
         if(imageUtils == null){
             imageUtils = new ImageUtils();
         }
         return imageUtils;
+    }*/
+
+    public static Bitmap drawWaterMark(Context context,SharedPreferences sp, Bitmap src,String target){
+
+        if(src == null){
+            return null;
+        }
+        String sShot_on = sp.getString("shot_on","OnePlus 3");
+        String sPhote_by = sp.getString("photo_by","qingyuqy_");
+        String markType = sp.getString("markType",markType_phone);
+        Bitmap newPic = null;
+        Bitmap waterMark = null;
+        Log.e("markType",markType);
+        Log.e("target",target);
+        switch (markType){
+            case "时间水印":
+                newPic = addTimeMark(context,src);
+                break;
+            case "机型水印":
+                Bitmap temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_text);
+                String[] texts = new String[2];
+                texts[0] = context.getResources().getString(R.string.shot_on) +" " + sShot_on;
+                texts[1] = context.getResources().getString(R.string.photo_by) +" " + sPhote_by;
+                waterMark = ImageUtils.drawNewWaterMark(context,temp,texts);
+                newPic = addWaterMark(context,src,waterMark);
+                break;
+            case "机型和时间":
+                Bitmap temp1 = ImageUtils.addTimeMark(context,src);
+                Bitmap temp2 = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_text);
+                String[] texts1 = new String[2];
+                texts1[0] = context.getResources().getString(R.string.shot_on) +" " + sShot_on;
+                texts1[1] = context.getResources().getString(R.string.photo_by) +" " + sPhote_by;
+                waterMark = ImageUtils.drawNewWaterMark(context,temp2,texts1);
+                newPic = addWaterMark(context,temp1,waterMark);
+        }
+
+        FileOutputStream stream = null;
+        try {
+            stream = new FileOutputStream(target);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(newPic!=null){
+            newPic.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        }
+
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri uri = Uri.fromFile(new File(target));
+        intent.setData(uri);
+        context.getApplicationContext().sendBroadcast(intent);
+        return newPic;
     }
-    public Bitmap addWaterMark(Context context, Bitmap src, Bitmap watermark)
+    public static Bitmap addWaterMark(Context context, Bitmap src, Bitmap watermark)
     {
         if (src == null)
         {
@@ -62,7 +129,7 @@ public class ImageUtils {
         return newPic;
     }
 
-    public Bitmap addTimeMark(Context context,Bitmap src) {
+    public static Bitmap addTimeMark(Context context,Bitmap src) {
         if (src == null)
         {
             return null;
@@ -83,13 +150,13 @@ public class ImageUtils {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
 
-        cv.drawText(text,w- bounds.width(),h-bounds.height()-20*ratio,paint);
+        cv.drawText(text,w- bounds.width()-20*ratio,h-bounds.height()-20*ratio,paint);
         cv.save();
         cv.restore();
         return newPic;
     }
 
-    public Bitmap drawNewWaterMark(Context context,Bitmap watermark,String[] texts){
+    public static Bitmap drawNewWaterMark(Context context,Bitmap watermark,String[] texts){
         int w = watermark.getWidth();
         int h = watermark.getHeight();
         Bitmap newWaterMark = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -139,5 +206,67 @@ public class ImageUtils {
         float RATIO = Math.min(ratioWidth, ratioHeight);
         Log.e("ratio",RATIO+"");
         return RATIO;
+    }
+
+
+    public static boolean copyImage(String fromPath, String toPath) {
+        boolean result = false;
+        InputStream inStream = null;
+        FileOutputStream fs = null;
+        try {
+            int bytesum = 0;
+            int byteread = 0;
+            File oldFile = new File(fromPath);
+            if (oldFile.exists()&&oldFile.canRead()) {
+                FileInputStream fileInputStream = new FileInputStream(oldFile);
+                int len = fileInputStream.available();
+
+                Log.e("len",len+"");
+                if(len > 0){
+                    byte[] bt = new byte[len];
+                    int count;
+                    FileOutputStream fileOutputStream = new FileOutputStream(toPath);
+                    while((count=fileInputStream.read(bt)) > 0){
+                        fileOutputStream.write(bt,0,count);
+                    }
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                    result = true;
+                }
+                fileInputStream.close();
+                }
+            }
+
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.e("copy",result+"");
+      return result;
+    }
+
+    public static Bitmap getBitMap(String path){
+        Bitmap temp;
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+        temp = BitmapFactory.decodeFile(path, opt);
+        return temp;
+    }
+
+    public static  Bitmap compressImage(Bitmap image,int size,int options) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        image.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+
+        while (baos.toByteArray().length / 1024 > size) {
+            options -= 10;
+            baos.reset();
+            image.compress(Bitmap.CompressFormat.JPEG, options, baos);
+        }
+        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
+
+        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);
+        return bitmap;
     }
 }

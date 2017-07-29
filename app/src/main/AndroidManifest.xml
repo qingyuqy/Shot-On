@@ -21,6 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name="com.qingyu.qcamera.services.ShotOnXService" />
+        <service android:name="com.qingyu.qcamera.services.ShotOnXService" android:exported="false">
+            <intent-filter >
+                <action android:name="com.qingyu.qcamera.automark.enabled"/>
+                <action android:name="com.qingyu.qcamera.automark.disabled"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>
