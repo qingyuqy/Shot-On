@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        SharedPreferences.Editor editor = sp.edit();
+      /*  SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("autoMark",false);
-        editor.commit();
+        editor.commit();*/
         super.onDestroy();
     }
 
@@ -144,8 +144,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void initData(){
         sp = getSharedPreferences("Shot_On", MODE_PRIVATE);
-        sShot_on = sp.getString("shot_on","OnePlus 3");
-        sPhote_by = sp.getString("photo_by","qingyuqy_");
+        sShot_on = sp.getString("shot_on","Shot On OnePlus 3");
+        sPhote_by = sp.getString("photo_by","@qingyuqy_");
         //isPersonized = sp.getBoolean("isPersonized",false);
         markType = sp.getString("markType",markType_phone);
         autoMark = sp.getBoolean("autoMark",false);
@@ -223,8 +223,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
         final SharedPreferences.Editor editor = sp.edit();
-        sShot_on = sp.getString("shot_on","OnePlus 3");
-        sPhote_by = sp.getString("photo_by","qingyuqy_");
+        sShot_on = sp.getString("shot_on","Shot On OnePlus 3");
+        sPhote_by = sp.getString("photo_by","@qingyuqy_");
         markType = sp.getString("markType",markType);
         autoMark = sp.getBoolean("autoMark",false);
         Log.e("markType",markType);
@@ -258,8 +258,8 @@ public class MainActivity extends AppCompatActivity {
                     Intent startIntent = new Intent(MainActivity.this, ShotOnXService.class);
                     startService(startIntent);
                 }*/
-                sShot_on = sp.getString("shot_on","OnePlus 3");
-                sPhote_by = sp.getString("photo_by","qingyuqy_");
+                sShot_on = sp.getString("shot_on","Shot On OnePlus 3");
+                sPhote_by = sp.getString("photo_by","@qingyuqy_");
                // isPersonized = sp.getBoolean("isPersonized",false);
                 markType = sp.getString("markType",markType_phone);
                 Log.e("markType1",markType);
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public Bitmap drawWaterMark(Bitmap src){
-        return ImageUtils.drawWaterMark(MainActivity.this,sp,src,tempfile);
+        return ImageUtils.addWaterMark(MainActivity.this,sp,src,tempfile);
     }
     /*public Bitmap drawWaterMark(Bitmap src){
         Bitmap waterMark = null;

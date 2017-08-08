@@ -114,7 +114,7 @@ public class ShotOnXService extends Service {
         if (temp!=null){
             temp = ImageUtils.compressImage(temp,2048,70);
             SharedPreferences sp = getSharedPreferences("Shot_On", MODE_PRIVATE);
-            Bitmap newPic = ImageUtils.drawWaterMark(this,sp,temp,newPath);
+            Bitmap newPic = ImageUtils.addWaterMark(this,sp,temp,newPath);
             //Log.e("1","1");
         }
       /*  if( ImageUtils.copyImage(path,newPath)){

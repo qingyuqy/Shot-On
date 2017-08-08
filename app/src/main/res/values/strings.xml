@@ -3,8 +3,8 @@
     <string name="action_settings">设置</string>
     <string name="shot_on">Shot On</string>
     <string name="photo_by">Photo by</string>
-    <string name="phone">机型</string>
-    <string name="author">作者</string>
+    <string name="phone">主行</string>
+    <string name="author">次行</string>
     <string name="isPersonized">自定义</string>
     <string name="save">保存</string>
     <string-array name="markTypes">

@@ -43,43 +43,61 @@ public class ImageUtils {
         return imageUtils;
     }*/
 
-    public static Bitmap drawWaterMark(Context context,SharedPreferences sp, Bitmap src,String target){
+    public static Bitmap addWaterMark(Context context,SharedPreferences sp, Bitmap src,String target){
 
         if(src == null){
             return null;
         }
-        String sShot_on = sp.getString("shot_on","OnePlus 3");
-        String sPhote_by = sp.getString("photo_by","qingyuqy_");
+        String sShot_on = sp.getString("shot_on","Shot On OnePlus 3");
+        String sPhote_by = sp.getString("photo_by","@qingyuqy_");
         String markType = sp.getString("markType",markType_phone);
         Bitmap newPic = null;
         Bitmap waterMark = null;
         Log.e("markType",markType);
         Log.e("target",target);
+
+        int srcWidth = src.getWidth();
+        int srcHeight = src.getHeight();
+
         switch (markType){
             case "时间水印":
                 newPic = addTimeMark(context,src);
                 break;
             case "机型水印":
-                Bitmap temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_text);
+                Bitmap temp = null;
+                if(srcWidth>srcHeight){
+                    temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_horizontal);
+                }else{
+                    temp = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_vertical);
+                }
+
                 String[] texts = new String[2];
-                texts[0] = context.getResources().getString(R.string.shot_on) +" " + sShot_on;
-                texts[1] = context.getResources().getString(R.string.photo_by) +" " + sPhote_by;
-                waterMark = ImageUtils.drawNewWaterMark(context,temp,texts);
-                newPic = addWaterMark(context,src,waterMark);
+                texts[0] = sShot_on;
+                texts[1] = sPhote_by;
+                waterMark = ImageUtils.drawMark(context,src,temp,texts);
+                newPic = addPhoneMark(context,src,waterMark);
                 break;
             case "机型和时间":
                 Bitmap temp1 = ImageUtils.addTimeMark(context,src);
-                Bitmap temp2 = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_text);
+                Bitmap temp2 = null;
+                if(srcWidth>srcHeight){
+                    temp2 = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_horizontal);
+                }else{
+                    temp2 = BitmapFactory.decodeResource(context.getResources(),R.drawable.watermark_empty_vertical);
+                }
                 String[] texts1 = new String[2];
-                texts1[0] = context.getResources().getString(R.string.shot_on) +" " + sShot_on;
-                texts1[1] = context.getResources().getString(R.string.photo_by) +" " + sPhote_by;
-                waterMark = ImageUtils.drawNewWaterMark(context,temp2,texts1);
-                newPic = addWaterMark(context,temp1,waterMark);
+                texts1[0] = sShot_on;
+                texts1[1] = sPhote_by;
+                waterMark = ImageUtils.drawMark(context,src,temp2,texts1);
+                newPic = addPhoneMark(context,temp1,waterMark);
         }
-
+        File outFile = new File(target);
+        if(!outFile.getParentFile().exists()){
+            outFile.getParentFile().mkdirs();
+        }
         FileOutputStream stream = null;
         try {
-            stream = new FileOutputStream(target);
+            stream = new FileOutputStream(outFile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -88,12 +106,12 @@ public class ImageUtils {
         }
 
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri uri = Uri.fromFile(new File(target));
+        Uri uri = Uri.fromFile(outFile);
         intent.setData(uri);
         context.getApplicationContext().sendBroadcast(intent);
         return newPic;
     }
-    public static Bitmap addWaterMark(Context context, Bitmap src, Bitmap watermark)
+    public static Bitmap addPhoneMark(Context context, Bitmap src, Bitmap watermark)
     {
         if (src == null)
         {
@@ -141,12 +159,17 @@ public class ImageUtils {
         Bitmap newPic = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas cv = new Canvas(newPic);
         cv.drawBitmap(src, 0, 0, null);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String text = df.format(new Date());
         float ratio = calculateRatio(src);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(dp2px(context, 45)*ratio);
+        if(w>h){
+            paint.setTextSize(dp2px(context, 50)*ratio);
+        }else{
+            paint.setTextSize(dp2px(context, 45)*ratio);
+        }
+
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
 
@@ -156,7 +179,9 @@ public class ImageUtils {
         return newPic;
     }
 
-    public static Bitmap drawNewWaterMark(Context context,Bitmap watermark,String[] texts){
+    public static Bitmap drawMark(Context context,Bitmap src,Bitmap watermark,String[] texts){
+        int srcWidth = src.getWidth();
+        int srcHeight = src.getHeight();
         int w = watermark.getWidth();
         int h = watermark.getHeight();
         Bitmap newWaterMark = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -171,9 +196,17 @@ public class ImageUtils {
             paints[i] = new Paint(Paint.ANTI_ALIAS_FLAG);
             paints[i] .setColor(Color.WHITE);
             if(i == 0){
-                paints[i] .setTextSize(dp2px(context, 56));
+                if(srcWidth>srcHeight){
+                    paints[i] .setTextSize(165);
+                }else {
+                    paints[i] .setTextSize(148);
+                }
             }else{
-                paints[i] .setTextSize(dp2px(context, 45));
+                if(srcWidth>srcHeight){
+                    paints[i] .setTextSize(118);
+                }else {
+                    paints[i] .setTextSize(108);
+                }
             }
             Rect bounds = new Rect();
             paints[i] .getTextBounds(texts[i], 0, texts[i].length(), bounds);
